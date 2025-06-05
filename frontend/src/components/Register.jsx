@@ -27,9 +27,6 @@ function Register() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <Link to="/" className="flex justify-center">
-          <h2 className="text-3xl font-bold text-red-600">KFC</h2>
-        </Link>
         <h2 className="mt-6 text-center text-2xl font-bold text-gray-900">
           Бүртгүүлэх
         </h2>
