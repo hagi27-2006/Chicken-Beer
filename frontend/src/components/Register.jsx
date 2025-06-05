@@ -147,7 +147,7 @@ function Register() {
             <div className="relative">
               <div className="relative flex justify-center text-sm">
                 <span className="px-2 bg-white text-gray-500">
-                  Эсвэл <Link to="/login" className="font-medium text-red-600 hover:text-red-500">Нэвтрэх</Link>
+                  Эсвэл <Link to="/" className="font-medium text-red-600 hover:text-red-500">Нэвтрэх</Link>
                 </span>
               </div>
             </div>
