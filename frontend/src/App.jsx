@@ -3,6 +3,7 @@ import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Register from "./components/Register";
+import 'antd/dist/reset.css';
 
 function App() {
   return (

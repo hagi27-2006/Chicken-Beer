@@ -6,6 +6,15 @@ import basket from "../assets/basket.png";
 
 function Navbar({ basketCount }) {
   const [showLogin, setShowLogin] = useState(false);
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem("user");
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+
+  const handleLogout = () => {
+    localStorage.clear();
+    setUser(null);
+  };
 
   return (
     <>
@@ -26,15 +35,26 @@ function Navbar({ basketCount }) {
               Захиалгын явц
             </Link>
 
-            <button
-              onClick={() => setShowLogin(true)}
-              className="text-gray-700 hover:text-red-600"
-            >
-              Нэвтрэх
-            </button>
+            {user ? (
+              <>
+                <span className="text-gray-700">{user.name}</span>
+                {/* <button
+                  onClick={handleLogout}
+                  className="text-gray-700 hover:text-red-600"
+                >
+                  Гарах
+                </button> */}
+              </>
+            ) : (
+              <button
+                onClick={() => setShowLogin(true)}
+                className="text-gray-700 hover:text-red-600"
+              >
+                Нэвтрэх
+              </button>
+            )}
 
             <div className="relative">
-    
               <img src={basket} alt="Basket" className="h-8" />
               {basketCount > 0 && (
                 <span className="absolute top-0 right-0 bg-[#D81E1E] text-white text-xs rounded-full px-1">
@@ -45,7 +65,18 @@ function Navbar({ basketCount }) {
           </div>
         </div>
       </nav>
-      {showLogin && <Login onClose={() => setShowLogin(false)} />}
+
+      {showLogin && (
+        <Login
+          onClose={() => {
+            setShowLogin(false);
+            const savedUser = localStorage.getItem("user");
+            if (savedUser) {
+              setUser(JSON.parse(savedUser));
+            }
+          }}
+        />
+      )}
     </>
   );
 }

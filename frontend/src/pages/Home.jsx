@@ -4,12 +4,14 @@ import logo2 from "../assets/logo2.png";
 import { useState, useEffect, useRef } from "react";
 import Order from "../components/Order";
 import Navbar from "../components/Navbar";
+import MyOrders from "../pages/MyOrders";
 
 const Home = () => {
   const images = [logo2, logo1, logo];
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [basketCount, setBasketCount] = useState(0);
+  const [orders, setOrders] = useState([]);
   const orderRef = useRef(null);
 
   useEffect(() => {
@@ -26,7 +28,7 @@ const Home = () => {
 
   const handleOrderClick = () => {
     if (orderRef.current) {
-      const yOffset = -80; // Adjust for fixed header if necessary
+      const yOffset = -80;
       const y =
         orderRef.current.getBoundingClientRect().top + window.scrollY + yOffset;
 
@@ -35,7 +37,12 @@ const Home = () => {
   };
 
   const updateBasketCount = (count) => {
-    setBasketCount((prevCount) => prevCount + count); // Update basket count
+    setBasketCount((prevCount) => prevCount + count);
+  };
+
+  const addOrder = (item) => {
+    setOrders((prevOrders) => [...prevOrders, item]);
+    updateBasketCount(1);
   };
 
   return (
@@ -70,8 +77,9 @@ const Home = () => {
         )}
       </div>
       <div ref={orderRef} className="mt-10">
-        <Order updateBasketCount={updateBasketCount} />
+        <Order addOrder={addOrder} />
       </div>
+      <MyOrders orders={orders} />
     </>
   );
 };
