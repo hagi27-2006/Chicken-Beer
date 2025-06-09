@@ -1,123 +1,64 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { BASE_URL } from "../../constants.js";
 
-const menu = [
-  {
-    title: "GARLIC CHICKENS",
-    items: [
-      {
-        name: "Тендертэй багц",
-        description: "5ш тахианы мах, 5ш тендэр мах, 1ш том коулсло",
-        price: "18,500₮",
-        image: "/random.png",
-      },
-      {
-        name: "Андууд тендертэй багц",
-        description: "5ш тахианы мах, 5ш тендэр мах, 1ш том коулсло",
-        price: "36,000₮",
-        image: "/random.png",
-      },
-      {
-        name: "Арвин багц",
-        description: "5ш тахианы мах, 5ш тендэр мах, 1ш том коулсло",
-        price: "52,000₮",
-        image: "/random.png",
-      },
-    ],
-  },
-  {
-    title: "FRIED CHICKENS",
-    items: [
-      {
-        name: "Тендертэй шарсан тахиа",
-        description: "5ш шарсан тахианы мах",
-        price: "20,000₮",
-        image: "/random.png",
-      },
-      {
-        name: "Шарсан тахианы багц",
-        description: "10ш шарсан тахианы мах",
-        price: "38,000₮",
-        image: "/random.png",
-      },
-    ],
-  },
-  {
-    title: "GOLD CHICKENS",
-    items: [
-      {
-        name: "Алтан шарсан тахиа",
-        description: "Алтан шарсан тахианы мах",
-        price: "22,000₮",
-        image: "/random.png",
-      },
-    ],
-  },
-  {
-    title: "CHEESE CHICKENS",
-    items: [
-      {
-        name: "Бяслагтай тахиа",
-        description: "Тахианд зориулсан бяслаг",
-        price: "25,000₮",
-        image: "/random.png",
-      },
-    ],
-  },
-  {
-    title: "YANGNYUM CHICKEN",
-    items: [
-      {
-        name: "Яннүм тахиа",
-        description: "Амтлаг яннүм тахианы мах",
-        price: "24,000₮",
-        image: "/random.png",
-      },
-    ],
-  },
-  {
-    title: "SIDE MENU",
-    items: [
-      {
-        name: "Коулсло",
-        description: "Том хэмжээтэй коулсло",
-        price: "5,000₮",
-        image: "/random.png",
-      },
-    ],
-  },
-  {
-    title: "BEVERAGES",
-    items: [
-      {
-        name: "Кола",
-        description: "Шар айраг",
-        price: "3,000₮",
-        image: "/random.png",
-      },
-    ],
-  },
-];
+function groupByCategory(items) {
+  const grouped = {};
+  items.forEach((item) => {
+    if (!grouped[item.category]) grouped[item.category] = [];
+    grouped[item.category].push(item);
+  });
+  return Object.entries(grouped).map(([title, items]) => ({ title, items }));
+}
 
-function Menu({ updateBasketCount }) {
-  const handleAddToBasket = () => {
-    updateBasketCount(1);
+function Menu({ addOrder }) {
+  const [menu, setMenu] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const handleAddToBasket = (item) => {
+    addOrder(item);
+    console.log(`Added to basket: ${item.name}`);
   };
+
+  useEffect(() => {
+    fetch(`${BASE_URL}api/menu`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Network response was not ok");
+        return res.json();
+      })
+      .then((json) => {
+        if (json.success && Array.isArray(json.data)) {
+          setMenu(groupByCategory(json.data));
+        } else {
+          setMenu([]);
+          console.warn("API returned success false or data is not array");
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Fetch error:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) return <div className="text-center mt-20">Loading...</div>;
+  if (menu.length === 0)
+    return <div className="text-center mt-20">No menu items found</div>;
 
   return (
     <div className="p-16">
       {menu.map((category, idx) => (
         <div key={idx} className="mb-12">
           <h1 className="text-3xl mb-6 ml-6 text-start">{category.title}</h1>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-9">
             {category.items.map((item, index) => (
               <div
                 key={index}
-                className="group bg-[#F9F9F9] border overflow-hidden transition-all duration-300"
+                className="group bg-[#F9F9F9] border overflow-hidden rounded-md shadow-sm transition-all duration-300 hover:shadow-lg"
               >
                 <img
                   src={item.image}
                   alt={item.name}
-                  className="w-full h-80 object-cover"
+                  className="w-full h-70 object-cover"
                 />
                 <div className="p-4 transition-all duration-300">
                   <h2 className="text-md font-bold">{item.name}</h2>
@@ -127,7 +68,7 @@ function Menu({ updateBasketCount }) {
                     <p className="text-sm text-gray-600">{item.description}</p>
                     <button
                       className="w-full h-[40px] mt-2 px-3 py-1 bg-[#D81E1E] text-white text-sm font-bold rounded hover:bg-red-700"
-                      onClick={handleAddToBasket}
+                      onClick={() => handleAddToBasket(item)}
                     >
                       Сагсанд хийх
                     </button>

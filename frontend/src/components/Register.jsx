@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import zurag from '../assets/zurag.png';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { BASE_URL } from '../../constants.js';
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -19,159 +22,120 @@ function Register() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add registration logic here
-    console.log('Register attempt:', formData);
+
+    try {
+      const response = await fetch(`${BASE_URL}api/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+
+      if (response.status === 201) {
+        toast.success("Бүртгэл амжилттай!");
+        setFormData({
+          name: '',
+          phone: '',
+          email: '',
+          password: '',
+          confirmPassword: ''
+        });
+      } else {
+        toast.error(data.message || "Бүртгэл амжилтгүй.");
+      }
+    } catch (error) {
+      toast.error("Сүлжээний алдаа: " + error.message);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="flex w-full max-w-6xl mx-auto">
-        {/* Left side - Form */}
-        <div className="flex-1 flex flex-col justify-center px-4 sm:px-6 lg:px-8 py-8">
-          <div className="sm:mx-auto sm:w-full sm:max-w-md">
-            <h2 className="text-center text-2xl font-bold text-gray-900">
-              
-            </h2>
-          </div>
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <ToastContainer />
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <h2 className="mt-6 text-center text-2xl font-bold text-gray-900">
+          Бүртгүүлэх
+        </h2>
+      </div>
 
-          <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-            <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-              <div className="sm:mx-auto sm:w-full sm:max-w-md">
-                <h2 className="text-center text-2xl font-bold text-gray-900">
-                  Бүртгүүлэх
-                </h2>
-              </div>
-              <form className="space-y-6" onSubmit={handleSubmit}>
-                <div>
-                  <label className="block text-sm font-bold text-gray-700">
-                    Нэр
-                  </label>
-                  <div className="mt-1">
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-600 focus:border-red-600"
-                      placeholder="Нэр"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-bold text-gray-700">
-                    Утасны дугаар
-                  </label>
-                  <div className="mt-1">
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      required
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-600 focus:border-red-600"
-                      placeholder="Утасны дугаар"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-bold text-gray-700">
-                    И-мэйл
-                  </label>
-                  <div className="mt-1">
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-600 focus:border-red-600"
-                      placeholder="И-мэйл"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-bold text-gray-700">
-                    Нууц үг
-                  </label>
-                  <div className="mt-1">
-                    <input
-                      type="password"
-                      name="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      required
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-600 focus:border-red-600"
-                      placeholder="Нууц үг"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-bold text-gray-700">
-                    Нууц үг давтаж хийх
-                  </label>
-                  <div className="mt-1">
-                    <input
-                      type="password"
-                      name="confirmPassword"
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                      required
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-600 focus:border-red-600"
-                      placeholder="Нууц үг давтаж хийх"
-                    />
-                  </div>
-                </div>
-
-                <div className="bg-gray-50 p-4 rounded-md">
-                  <h3 className="text-sm font-medium text-gray-900 mb-2">
-                    Та бүртгүүлснээр дараах боломжийг идлэх боломжтой юм:
-                  </h3>
-                  <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
-                    <li>Онцгой урамшуулал, боломжуудыг аваарай</li>
-                    <li>Очиж авах эсвэл хүргэлтийн захиалгаа хялбарчлах</li>
-                  </ul>
-                </div>
-
-                <div>
-                  <button
-                    type="submit"
-                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600"
-                  >
-                    Бүртгүүлэх
-                  </button>
-                </div>
-              </form>
-
-              <div className="mt-6">
-                <div className="relative">
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-white text-gray-500">
-                      Эсвэл <Link to="/" className="font-medium text-red-600 hover:text-red-500">Нэвтрэх</Link>
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Right side - Image */}
-        <div className="hidden lg:block lg:w-1/2 bg-gray-100">
-          <div className="sticky top-0 h-screen flex items-center justify-center">
-            <div className="w-full h-[600px] relative">
-              <img
-                src={zurag}
-                alt="Шарсан тахиа"
-                className="w-full h-full object-cover"
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            {/* name, phone, email, password, confirmPassword inputs (same as before) */}
+            {/* Include the rest of your form fields here unchanged */}
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Нэр</label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
               />
             </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Утасны дугаар</label>
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                required
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">И-мэйл</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Нууц үг</label>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Нууц үг давтаж хийх</label>
+              <input
+                type="password"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+              />
+            </div>
+
+            <div>
+              <button
+                type="submit"
+                className="w-full py-2 px-4 bg-red-600 text-white rounded-md hover:bg-red-700"
+              >
+                Бүртгүүлэх
+              </button>
+            </div>
+          </form>
+
+          <div className="mt-6 text-center text-sm text-gray-600">
+            Эсвэл <Link to="/" className="text-red-600 hover:underline">Нэвтрэх</Link>
           </div>
         </div>
       </div>
@@ -179,4 +143,4 @@ function Register() {
   );
 }
 
-export default Register; 
+export default Register;
